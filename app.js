@@ -1,4 +1,50 @@
-import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+
+const SUPABASE_SDK_SOURCES = [
+  "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm",
+  "https://esm.sh/@supabase/supabase-js@2?bundle",
+];
+let createClient = null;
+function timeLimit(promise, milliseconds, label) {
+  let timer;
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => {
+      timer = setTimeout(
+        () =>
+          reject(
+            new Error(`${label} timed out. Check your connection and retry.`)
+          ),
+        milliseconds
+      );
+    }),
+  ]).finally(() => clearTimeout(timer));
+}
+async function loadSupabaseSdk() {
+  const attempts = [];
+  for (const url of SUPABASE_SDK_SOURCES) {
+    try {
+      const library = await timeLimit(
+        import(/* @vite-ignore */ url),
+        9000,
+        "Loading the game library"
+      );
+      if (typeof library.createClient !== "function")
+        throw new Error("Missing createClient export");
+      return library.createClient;
+    } catch (error) {
+      console.warn(
+        "Cards Against Encore: SDK source unavailable:",
+        new URL(url).hostname,
+        error
+      );
+      attempts.push(new URL(url).hostname);
+    }
+  }
+  throw new Error(
+    `Could not load the Supabase game library from ${attempts.join( " or " )}. Check internet/CDN access, or try another network.`
+  );
+}
+window.__encoreAppStarted = true;
 
 // Cards Against Encore — zero-build static client.
 // Security-sensitive game logic lives in the Supabase SQL RPCs, not this file.
@@ -85,7 +131,7 @@ function friendlyError(error) {
   if (/failed to fetch|networkerror/i.test(s))
     return "Connection failed. Check your internet, Supabase URL, and project status.";
   if (/could not find the function|schema cache/i.test(s))
-    return "The database setup is missing. Run supabase/SETUP_ALL.sql in Supabase SQL Editor.";
+    return "The database setup is missing or incomplete. Run the six SQL repair steps STEP_01 through STEP_06 in Supabase SQL Editor.";
   return s;
 }
 async function rpc(fn, args = {}) {
@@ -95,15 +141,17 @@ async function rpc(fn, args = {}) {
   return data;
 }
 function setupError(message) {
-  app.innerHTML = `<section class="panel panel-pad error-panel"> <div class="eyebrow">✦ THE CURTAIN ISN'T READY</div> <h1>One little setup step.</h1><p>${html(message)}</p> <p class="text-note">Open <code>site/config.js</code>, add your Supabase project URL and publishable key, and run <code>supabase/SETUP_ALL.sql</code> in Supabase's SQL Editor. Enable Anonymous Sign-Ins too.</p> <button class="action action-secondary" data-action="retry-init">Try Again</button> </section>`;
+  app.innerHTML = `<section class="panel panel-pad error-panel"> <div class="eyebrow">✦ THE CURTAIN ISN'T READY</div> <h1>One little setup step.</h1><p>${html(message)}</p> <p class="text-note">Open <code>site/config.js</code>, add your Supabase project URL and publishable key, and run the six numbered SQL setup files (<code>STEP_01</code> through <code>STEP_06</code>) in Supabase's SQL Editor. Enable Anonymous Sign-Ins too.</p> <button class="action action-secondary" data-action="retry-init">Try Again</button> </section>`;
 }
 async function init() {
   applyAssets();
   if (!confValid()) {
-    setupError("Your Supabase URL or publishable key is still a placeholder.");
+    setupError("Your Supabase URL or publishable key is missing or invalid.");
+    window.__encoreBootComplete = true;
     return;
   }
   try {
+    if (!createClient) createClient = await loadSupabaseSdk();
     db = createClient(cfg.supabaseUrl, cfg.publishableKey, {
       auth: {
         persistSession: true,
@@ -114,14 +162,21 @@ async function init() {
     let {
       data: { session },
       error,
-    } = await db.auth.getSession();
+    } = await timeLimit(db.auth.getSession(), 12000, "Restoring guest session");
     if (error) throw error;
     if (!session) {
-      const result = await db.auth.signInAnonymously();
+      const result = await timeLimit(
+        db.auth.signInAnonymously(),
+        12000,
+        "Guest sign-in"
+      );
       if (result.error) throw result.error;
       session = result.data.session;
     }
-    user = session?.user || (await db.auth.getUser()).data.user;
+    user =
+      session?.user ||
+      (await timeLimit(db.auth.getUser(), 12000, "Checking guest session")).data
+        .user;
     if (!user) throw new Error("Could not create a guest player session.");
     const last = readLastRoom();
     const invitedCode = new URL(location.href).searchParams
@@ -144,8 +199,11 @@ async function init() {
         if (currentRoomId) refreshState();
       }, 3000);
     if (!clockTimer) clockTimer = setInterval(updateClock, 200);
+    window.__encoreBootComplete = true;
   } catch (error) {
+    console.error("Cards Against Encore startup error:", error);
     setupError(friendlyError(error));
+    window.__encoreBootComplete = true;
   }
 }
 function readLastRoom() {
@@ -243,23 +301,4 @@ function submitPanel() {
       `${state.submission_count} of ${state.submission_required} responses received. Wait for the judge or audience to see them.`
     );
   const picks = state.prompt?.picks || 1;
-  return `<section class="panel game-panel"><div class="section-label">✧ YOUR PRIVATE HAND <span class="badge">${ state.hand.length } CARDS</span></div> <h2>Choose your response${picks > 1 ? "s" : ""}</h2> <p class="text-note">Select ${picks} card${ picks > 1 ? "s" : "" } in order. You may use a custom answer too.</p> <div class="answer-grid">${state.hand .map((card, i) => { const index = selected.indexOf("c:" + card.id); return `<button type="button" class="card answer-card ${ index >= 0 ? "selected" : "" }" data-action="select-card" data-card-id="${card.id}" aria-pressed="${ index >= 0 }" aria-label="Choose: ${html(card.text)}"> <span class="card-mini">ENCORE RESPONSE ${i + 1}</span> <span class="card-title">${html(card.text)}</span> <span class="choice-number">${ index >= 0 ? index + 1 : "✦" }</span></button>`; }) .join("")}</div> <div class="custom-box ${ selected.includes("custom") ? "custom-selected" : "" }"> <div class="custom-head"><strong>✎ Write Your Own Card</strong><span>ONE custom answer per round</span></div> <textarea id="customAnswer" maxlength="160" aria-label="Your custom card response" placeholder="The funniest, strangest, most unhinged answer you can imagine..."></textarea> <div class="custom-bottom"><span class="custom-counter" id="customCount">${ customText.length }/160 characters</span> <button type="button" class="action action-small action-secondary" data-action="select-custom">${ selected.includes("custom") ? "✓ Remove Custom Selection" : "+ Use This Answer" }</button></div> </div> <div class="selection-bar"><p id="selectionCount"><strong>${ selected.length }/${picks}</strong> selected ${ selected.length ? `· ${selected .map((s, i) => `#${i + 1} ${s === "custom" ? "Custom" : "Card"}`) .join(", ")}` : "" }</p> <button type="button" class="action" id="submitAnswer" data-action="submit-answer" ${ selected.length !== picks || (selected.includes("custom") && !customText.trim()) ? "disabled" : "" }>Lock In My Answer ✦</button></div> </section>`;
-}
-function answerEntry(sub, i) {
-  const r = state.room;
-  const isResult = r.phase === "results" || r.phase === "ended";
-  const isWinner = r.winning_submission_id === sub.id;
-  const eligible =
-    r.phase === "judge" &&
-    ((r.mode === "judge" && r.judge_member_id === state.me.id) ||
-      (r.mode === "vote" &&
-        state.has_submitted &&
-        !state.has_voted &&
-        !sub.is_mine));
-  const who = playerById(sub.author_id)?.nickname || "A mysterious performer";
-  const action = eligible
-    ? r.mode === "judge"
-      ? "pick-winner"
-      : "cast-vote"
-    : "";
-  return `<button type="button" class="response-entry ${ isWinner ? "winner-entry" : "" } ${eligible ? "can-select" : isResult ? "" : "entry-disabled"}" ${ action ? `data-action="${action}" data-submission-id="${sub.id}"` : "disabled" }> <span class="entry-index">${ isWinner ? "★ THE WINNING ANSWER" : `RESPONSE ${String(i + 1).padStart(2, "0")}` }</span> <div class="response-text">${sub.answ
+  return `<section class="panel game-panel"><div class="section-label">✧ YOUR PRIVATE HAND <span class="badge">${ state.hand.length } CARDS</span></div> <h2>Choose your response${picks > 1 ? "s" : ""}</h2> <p class="text-note">Select ${picks} card${ picks > 1 ? "s" : "" } in order. You may use a custom answer too.</p> <div class="answer-grid">${state.hand .map((card, i) => { const index = selected.indexOf("c:" + card.id); return `<button type="button" class="card answer-card ${ index >= 0 ? "selected" : "" }" data-action="select-card" data-card-id="${card.id}" aria-pressed="${ index >= 0 }" aria-label="Choose: ${html(card.text)}"> <span class="card-mini">ENCORE RESPONSE ${i + 1}</span> <span class="card-title">${html(card.text)}</span> <span class="choice-number">${ index >= 0 ? index + 1 : "✦" }</span></button>`; }) .join("")}</div> <div class="custom-box ${ selected.includes("custom") ? "custom-selected" : "" }"> <div class="custom-head"><strong>✎ Write Your Own Card</strong><span>ONE custom answer per round</span></div> <textarea id="customAnswer" maxlength

@@ -8,8 +8,35 @@
   <title>Cards Against Encore | The Azure Parlor</title>
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   <link rel="stylesheet" href="styles.css">
-  <script src="config.js"></script>
-  <script type="module" src="app.js"></script>
+  <script src="config.js?v=3"></script>
+  <script>
+    // Works even if app.js cannot load, parse, or initialize.
+    window.__encoreAppStarted = false;
+    window.__encoreBootComplete = false;
+    window.addEventListener('DOMContentLoaded', () => {
+      const app = document.getElementById('app');
+      function showBootIssue() {
+        if (window.__encoreBootComplete || !app || !app.querySelector('.loading-screen')) return;
+        const hint = window.__encoreAppStarted
+          ? 'The game was unable to finish connecting to Supabase. Check your project URL, publishable key, Anonymous Sign-Ins, and connection.'
+          : 'The game script did not start. Check that Render publishes the site folder and that app.js is accessible. A network restriction or JavaScript error may also be responsible.';
+        app.innerHTML = '<section class="panel panel-pad error-panel"><div class="eyebrow">✦ CURTAIN CALL INTERRUPTED</div><h1>The stage could not load.</h1><p id="boot-hint"></p><p class="text-note">Open your browser developer console for more detail, or try another network.</p><button class="action action-secondary" id="boot-retry">Reload the Game</button></section>';
+        document.getElementById('boot-hint').textContent = hint;
+        document.getElementById('boot-retry').addEventListener('click', () => location.reload());
+      }
+      // Missing or unparseable app.js? Warn promptly. If the app started,
+      // the SDK/auth operation timeouts will diagnose the network themselves.
+      const missingScriptGuard = setTimeout(() => {
+        if (!window.__encoreAppStarted) showBootIssue();
+      }, 11000);
+      const stalledStartupGuard = setTimeout(showBootIssue, 47000);
+      window.addEventListener('pagehide', () => {
+        clearTimeout(missingScriptGuard);
+        clearTimeout(stalledStartupGuard);
+      }, { once: true });
+    });
+  </script>
+  <script type="module" src="app.js?v=3"></script>
 </head>
 <body>
   <div class="stars" aria-hidden="true"></div>

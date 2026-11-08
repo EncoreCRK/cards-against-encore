@@ -1,0 +1,708 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#07103d">
+  <meta name="description" content="Cards Against Encore — a blue, theatrical multiplayer party card game. Create a room, deal the chaos, and claim the encore.">
+  <title>Cards Against Encore | The Azure Parlor</title>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <!-- Styles are embedded so a missing stylesheet cannot break the game interface. -->
+  <style>
+:root{--navy:#060d2e;--navy2:#081644;--panel:rgba(10,29,83,.88);--panel2:rgba(15,43,106,.74);--border:rgba(139,195,255,.24);--muted:#9eb8d5;--white:#eef7ff;--cyan:#64dcff;--blue:#5899ff;--gold:#eed59a;--danger:#ff9bb0;--prompt-art:url('assets/cards/prompt-front.svg');--response-art:url('assets/cards/response-front.svg');--back-art:url('assets/cards/card-back.svg');--logo-art:url('assets/cards/crest.svg')}
+*{box-sizing:border-box}html{min-height:100%;scroll-behavior:smooth}body{min-height:100vh;margin:0;color:var(--white);background:radial-gradient(ellipse at 50% 0%,#133983 0,#08143e 38%,#040a23 78%);font-family:'DM Sans',system-ui,sans-serif;line-height:1.5;overflow-x:hidden}button,input,select,textarea{font:inherit}button{cursor:pointer}button:disabled{cursor:not-allowed;opacity:.58}button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}a{color:#aee8ff;text-decoration:none}a:hover{text-decoration:underline}h1,h2,h3,p{margin-top:0}h1,h2,h3{line-height:1.18}h1,h2,.display-font{font-family:Cinzel,Georgia,serif}::selection{background:#6fc9ff;color:#071536}
+.stars{position:fixed;inset:0;z-index:-2;pointer-events:none;background-image:radial-gradient(1.5px 1.5px at 10% 20%,#fff9 99%,transparent),radial-gradient(2px 2px at 25% 65%,#9bdeff99 99%,transparent),radial-gradient(1px 1px at 53% 14%,#fff 99%,transparent),radial-gradient(1px 1px at 70% 43%,#b3d7ff99 99%,transparent),radial-gradient(1.5px 1.5px at 90% 81%,#fff9 99%,transparent);background-size:290px 260px,360px 330px,420px 430px,470px 380px,520px 440px;opacity:.72}.ambient{position:fixed;z-index:-1;width:390px;height:390px;filter:blur(90px);pointer-events:none;opacity:.23}.ambient-left{top:15%;left:-210px;background:#176bff}.ambient-right{right:-225px;bottom:8%;background:#03aae4}
+.app{width:min(1240px,calc(100% - 36px));margin:0 auto;padding:42px 0 60px;min-height:calc(100vh - 65px)}.global-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;border-top:1px solid #6b96dc29;padding:18px max(18px,calc((100vw - 1240px)/2));color:#829bc1;font-size:11px;letter-spacing:.09em}.loading-screen{min-height:65vh;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--muted)}.loading-icon{font-size:64px;color:var(--cyan);filter:drop-shadow(0 0 25px #41cfff);animation:twinkle 2s ease-in-out infinite}@keyframes twinkle{50%{transform:scale(1.15) rotate(25deg);opacity:.6}}
+.eyebrow{text-transform:uppercase;font-size:11px;font-weight:800;letter-spacing:.25em;color:#a7cffa}.eyebrow-gold{color:var(--gold)}.hero{text-align:center;max-width:780px;margin:0 auto 34px}.hero .crest{width:90px;height:90px;margin:auto auto 14px;display:block;object-fit:contain;filter:drop-shadow(0 0 22px #70ceff80)}.hero-title{font-size:clamp(2.4rem,8vw,5.6rem);text-transform:uppercase;letter-spacing:-.035em;text-shadow:0 4px 42px #258afb70;margin:12px auto 15px;line-height:1.05}.hero-title em{display:block;font-style:normal;background:linear-gradient(100deg,#a0e8ff,#f1f5ff 45%,#83b9ff);-webkit-background-clip:text;background-clip:text;color:transparent}.hero-subtitle{font-size:clamp(.94rem,2vw,1.12rem);color:var(--muted);line-height:1.8;max-width:570px;margin:auto}.divider-star{color:#5c9dd2;letter-spacing:.8em;margin:21px auto}.panel{border:1px solid var(--border);border-radius:20px;background:var(--panel);box-shadow:0 10px 40px #0004, inset 0 1px #f1f8ff0d;backdrop-filter:blur(18px)}.panel-pad{padding:25px}.intro-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;max-width:920px;margin:0 auto}.intro-grid .panel{padding:26px;position:relative;overflow:hidden}.intro-grid .panel:before{content:'';position:absolute;inset:0 0 auto;height:3px;background:linear-gradient(90deg,transparent,#64dcff,transparent)}.intro-grid h2{font-size:1.24rem;margin:10px 0}.intro-grid p{font-size:13px;color:var(--muted);min-height:40px}.panel-title{font-family:Cinzel,Georgia,serif;font-size:1.15rem}.field{display:flex;flex-direction:column;gap:7px;margin:0 0 16px}.field label,.field-label{font-size:11px;font-weight:800;color:#c7e0fd;text-transform:uppercase;letter-spacing:.1em}.field input,.field select,.field textarea,.inline-field input,.inline-field select{min-width:0;width:100%;background:#061437;border:1px solid #7fafff54;border-radius:11px;color:#f3fbff;padding:13px 13px;outline:none}.field textarea{min-height:90px;resize:vertical}.field select{appearance:none}.field input::placeholder,.field textarea::placeholder{color:#7891b4}.field input:focus,.field textarea:focus,.field select:focus{border-color:#60cbff;box-shadow:0 0 0 3px #2d9dfa22}.action{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:43px;background:linear-gradient(115deg,#49baff,#3977ef);border:1px solid #8ad6ff79;border-radius:11px;color:#04112e;font-weight:800;font-size:13px;letter-spacing:.01em;padding:10px 18px;box-shadow:0 5px 18px #1575ed55;transition:transform .18s,filter .18s}.action:hover:not(:disabled){filter:brightness(1.1);transform:translateY(-1px)}.action:active:not(:disabled){transform:translateY(1px)}.action-block{width:100%}.action-secondary{color:#d8edff;background:#132d69;box-shadow:none;border-color:#5b8fce75}.action-quiet{color:#bfdfff;background:#ffffff0b;border-color:#9abfff35;box-shadow:none}.action-danger{color:#ffdce5;background:#712c4b52;border-color:#f77b9566;box-shadow:none}.action-gold{color:#211d17;background:linear-gradient(110deg,#f5e5bc,#e9bb66);border-color:#ffe6a8;box-shadow:0 6px 18px #cf974f33}.action-small{min-height:35px;padding:7px 12px;font-size:12px}.text-note{color:var(--muted);font-size:12px}.tiny{font-size:11px}.error-panel{max-width:690px;margin:50px auto}.error-panel h1{font-size:2rem}.error-panel code{color:#bfeaff;word-break:break-all}
+.room-topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:18px}.brand-line{display:flex;align-items:center;gap:12px}.brand-line img{width:48px;height:48px;object-fit:contain}.brand-line h1{font-size:1.3rem;margin:4px 0 0;letter-spacing:.015em}.brand-line .eyebrow{font-size:9px}.room-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.room-code{display:inline-flex;gap:7px;align-items:center;border:1px dashed #75c8ff75;border-radius:12px;background:#071e52;font-family:monospace;font-size:17px;font-weight:800;letter-spacing:.15em;padding:8px 11px}.room-code small{color:#95b6e7;font:800 9px 'DM Sans',sans-serif;letter-spacing:.1em;display:block}.status-bar{border:1px solid #5d99d943;border-radius:16px;background:linear-gradient(110deg,#123a81bb,#071a49);padding:16px 20px;margin-bottom:18px}.status-content{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.status-title{font-size:1.45rem;margin:5px 0 2px}.status-desc{margin:0;color:#b2c6e1;font-size:13px}.round-pill{border:1px solid #a8ddff55;color:#c9eaff;background:#ffffff0d;border-radius:99px;padding:7px 13px;white-space:nowrap;font-size:12px;font-weight:700}.countdown{font-family:Cinzel,Georgia,serif;font-weight:700;font-size:1.6rem;color:#f1d79a;text-align:right;min-width:80px}.time-track{margin-top:14px;height:5px;background:#07102d;border-radius:99px;overflow:hidden}.time-fill{height:100%;width:100%;background:linear-gradient(90deg,#3c72fd,#57cfff,#e0eafa);transition:width .3s linear}.game-layout{display:grid;grid-template-columns:minmax(0,1fr) 275px;gap:18px;align-items:start}.main-section{min-width:0}.sidebar{display:flex;flex-direction:column;gap:15px;position:sticky;top:12px}.section-label{font-size:11px;font-weight:800;color:#bed6ff;text-transform:uppercase;letter-spacing:.2em;margin:0 0 13px}.game-panel{padding:23px;margin-bottom:16px}.game-panel h2{font-size:1.4rem;margin:0 0 10px}.game-panel>p{color:var(--muted)}.player-list{display:flex;flex-direction:column;gap:8px}.player-row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 11px;border-radius:11px;background:#071944aa;border:1px solid #84b2f528}.player-name{font-size:13px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:150px}.player-meta{display:flex;align-items:center;gap:6px;white-space:nowrap}.score{color:#f4d99c;font-size:12px;font-weight:800}.player-dot{width:7px;height:7px;background:#7883ad;border-radius:100%;display:inline-block;box-shadow:none}.player-dot.online{background:#54f8cf;box-shadow:0 0 8px #54f8cf77}.tiny-tag{display:inline-block;border-radius:6px;background:#3b6dc94d;color:#b8dfff;padding:2px 5px;font-size:9px}.divider{height:1px;background:#89b7f52c;margin:16px 0}.stat-row{display:flex;justify-content:space-between;align-items:center;font-size:13px;margin:10px 0;color:#b7cee8}.stat-row strong{color:#f2f8ff}.side-hint{font-size:12px;color:#9fb5d8;line-height:1.65}.badge{border:1px solid #7bbaec66;background:#14427c7a;border-radius:99px;color:#ccedff;font-size:11px;font-weight:800;padding:5px 10px}
+.prompt-wrap{display:flex;gap:18px;align-items:stretch}.card{border-radius:16px;position:relative;isolation:isolate;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;text-align:left;box-shadow:0 10px 32px #0005;transition:transform .16s,border-color .16s}.card:before{content:'';position:absolute;inset:0;z-index:-1;background-position:center;background-size:cover}.prompt-card{color:#f1faff;background:#081431;border:1px solid #5caafa88;min-height:270px;width:min(100%,365px);padding:25px}.prompt-card:before{background-image:linear-gradient(180deg,#07183e80,#020a23dc 95%),var(--prompt-art)}.prompt-card .card-title{font-size:clamp(1.25rem,3vw,1.85rem);font-weight:800;line-height:1.35;overflow-wrap:anywhere}.card-mini{font-size:10px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;opacity:.83}.card-small-note{font-size:11px;letter-spacing:.08em;color:#afdaf8}.card-crest{font-size:20px;color:#d8f6ff}.prompt-info{min-width:180px;flex:1;display:flex;flex-direction:column;justify-content:center;gap:11px}.prompt-info p{color:#afc9e9;font-size:13px}.prompt-info strong{color:#e0f5ff}.answer-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.answer-card{width:100%;min-height:170px;background:#d9eafa;color:#091a40;border:2px solid #93bded7a;padding:14px;cursor:pointer}.answer-card:before{background-image:linear-gradient(180deg,#fff9,#c0ddf0cb),var(--response-art)}.answer-card .card-title{font-size:clamp(.9rem,1.65vw,1.06rem);font-weight:800;line-height:1.4;overflow-wrap:anywhere}.answer-card .card-mini{font-size:9px}.answer-card:hover:not(:disabled),.response-entry:hover:not(.entry-disabled){transform:translateY(-3px)}.answer-card.selected{border-color:#6df3ff;box-shadow:0 0 0 3px #60d6ff4d,0 12px 30px #0007;transform:translateY(-4px)}.choice-number{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;font-size:13px;font-weight:900;background:#09275c;color:#bfe8ff}.selection-bar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin:18px 0 0}.selection-bar p{margin:0;color:#c3dfff;font-size:13px}.custom-box{padding:18px;background:linear-gradient(120deg,#12397580,#091d4b);border:1px dashed #86cfff7a;border-radius:15px;margin-top:15px}.custom-head{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}.custom-head strong{font-size:13px}.custom-head span{font-size:11px;color:#b9daff}.custom-box textarea{margin:11px 0 10px;width:100%;min-height:78px;resize:vertical;border:1px solid #578cd683;background:#061537;color:#f3faff;border-radius:10px;padding:12px}.custom-bottom{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}.custom-counter{font-size:11px;color:#9dbddc}.custom-selected{border-color:#65f2ed;box-shadow:inset 0 0 0 1px #62f2ed66}.waiting-card{min-height:230px;border-radius:17px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;border:1px dashed #6ab5ff88;background:linear-gradient(120deg,#0c2456,#0c1a43);text-align:center;padding:25px}.waiting-icon{font-size:45px;color:#b0e6ff;text-shadow:0 0 23px #30b9ff}.waiting-card h3{font-family:Cinzel,Georgia,serif;margin:0;font-size:1.3rem}.waiting-card p{margin:0;color:#adcaeb;font-size:13px;max-width:440px}.response-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.response-entry{position:relative;border:1px solid #8bb9ff66;background:linear-gradient(135deg,#112d6b,#0a1d4b);border-radius:14px;padding:17px;color:#ecf7ff;display:flex;flex-direction:column;gap:12px;text-align:left;transition:transform .16s,border-color .16s;width:100%;min-height:150px}.response-entry.can-select{cursor:pointer}.response-entry .response-text{font-weight:800;font-size:clamp(.94rem,2vw,1.12rem);line-height:1.42;overflow-wrap:anywhere}.answer-fragment{display:block;margin:6px 0}.response-entry .answer-fragment+.answer-fragment{padding-top:9px;border-top:1px dashed #8bbdff5c}.entry-index{font-size:10px;font-weight:800;letter-spacing:.18em;color:#96bfee}.response-entry.entry-disabled{opacity:.65}.response-entry.winner-entry{border:2px solid #f2d695;box-shadow:0 0 25px #d9b45844;background:linear-gradient(135deg,#42538a,#16306d)}.entry-footer{font-size:11px;color:#aed3fd;margin-top:auto}.winner-banner{text-align:center;border:1px solid #e7c98180;background:linear-gradient(100deg,#8f73333d,#142b64);border-radius:15px;padding:20px;margin-bottom:17px}.winner-banner h2{color:#ffe2a2;margin:6px 0}.leader-list{list-style:none;padding:0;margin:0}.leader-list li{display:flex;align-items:center;justify-content:space-between;padding:12px;border-bottom:1px solid #82aff92b;gap:8px}.leader-list li:last-child{border:0}.leader-list b{color:#f4d99c}.settings-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.settings-grid .field{margin:0}.settings-footer{display:flex;justify-content:flex-end;margin-top:17px}.custom-deck-list{display:flex;flex-direction:column;max-height:320px;overflow-y:auto;gap:7px;margin-top:15px;padding-right:3px}.deck-entry{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;border-radius:10px;padding:10px;background:#061944;border:1px solid #739ad033}.deck-entry p{font-size:12px;color:#d4e9ff;margin:5px 0 0;overflow-wrap:anywhere}.deck-entry .eyebrow{font-size:9px;letter-spacing:.1em}.deck-entry button{border:1px solid #e2a2b36c;background:#6f2b4869;color:#ffdce6;border-radius:7px;font-size:12px;padding:5px 8px}.hint-box{background:#13326570;border:1px solid #649ce13d;padding:12px 14px;border-radius:11px;margin-top:16px;color:#b6d0ec;font-size:12px}.two-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.info-cards{display:flex;gap:8px;flex-wrap:wrap}.info-cards .badge{background:#152e66;border-color:#679be656}.toasts{position:fixed;right:16px;bottom:18px;z-index:100;display:flex;flex-direction:column;gap:8px;width:min(360px,calc(100vw - 32px))}.toast{background:#102c69;color:#edf7ff;border:1px solid #76c9fa91;border-radius:13px;box-shadow:0 10px 30px #0009;padding:13px 16px;font-size:13px;animation:toastIn .2s ease}.toast.error{background:#552241;border-color:#ff91a7}.toast.success{background:#153e56;border-color:#68e4c2}@keyframes toastIn{from{transform:translateY(12px);opacity:0}to{opacity:1;transform:none}}.empty{color:var(--muted);font-size:12px}.copy-row{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+@media(max-width:1000px){.answer-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.game-layout{grid-template-columns:minmax(0,1fr) 250px}}
+@media(max-width:760px){.app{width:min(100% - 24px,600px);padding-top:22px}.intro-grid,.game-layout{grid-template-columns:1fr}.hero .crest{width:72px;height:72px}.hero-title{font-size:clamp(2.4rem,9vw,4rem)}.sidebar{position:static;display:grid;grid-template-columns:1fr 1fr}.room-topbar{align-items:flex-start}.brand-line h1{font-size:1.02rem}.room-code{font-size:15px}.prompt-wrap{flex-direction:column}.prompt-card{width:100%;min-height:230px}.prompt-info{min-width:0}.answer-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.answer-card{min-height:161px}.game-panel{padding:17px}.response-grid{grid-template-columns:1fr 1fr}.room-actions{width:100%;justify-content:space-between}.status-title{font-size:1.2rem}.status-bar{padding:14px 15px}.panel-pad{padding:17px}}
+@media(max-width:480px){.sidebar{grid-template-columns:1fr}.response-grid{grid-template-columns:1fr}.intro-grid .panel{padding:19px}.answer-card{min-height:148px;padding:12px}.answer-card .card-title{font-size:.88rem}.settings-grid{grid-template-columns:1fr 1fr;gap:9px}.game-panel h2{font-size:1.2rem}.countdown{font-size:1.35rem}.selection-bar .action{width:100%}.global-footer{flex-direction:column;text-align:center}.room-actions .action{font-size:11px;padding:8px 10px}.room-code{letter-spacing:.08em}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;scroll-behavior:auto!important;transition:none!important}}
+
+.hero-cards{height:124px;display:flex;justify-content:center;align-items:center;margin:-5px auto 22px;position:relative}.mini-back{width:79px;height:111px;background:var(--back-art) center/cover,#193e88;border:2px solid #91d8ff99;border-radius:9px;box-shadow:0 9px 20px #0008;position:absolute}.mini-back-left{transform:translateX(-58px) rotate(-16deg)}.mini-back-right{transform:translateX(58px) rotate(16deg)}.mini-back-center{z-index:1;transform:translateY(-5px);box-shadow:0 0 26px #4697ff77,0 9px 20px #0008}
+
+  </style>
+  <script src="config.js?v=4"></script>
+  <script>
+    // Works even if app.js cannot load, parse, or initialize.
+    window.__encoreBuild = 'self-contained-v4';
+    window.__encoreAppStarted = false;
+    window.__encoreBootComplete = false;
+    window.addEventListener('DOMContentLoaded', () => {
+      const app = document.getElementById('app');
+      function showBootIssue() {
+        if (window.__encoreBootComplete || !app || !app.querySelector('.loading-screen')) return;
+        const hint = window.__encoreAppStarted
+          ? 'The game was unable to finish connecting to Supabase. Check your project URL, publishable key, Anonymous Sign-Ins, and connection.'
+          : 'The game script did not start. Check that Render publishes the site folder and that app.js is accessible. A network restriction or JavaScript error may also be responsible.';
+        app.innerHTML = '<section class="panel panel-pad error-panel"><div class="eyebrow">✦ CURTAIN CALL INTERRUPTED</div><h1>The stage could not load.</h1><p id="boot-hint"></p><p class="text-note">Open your browser developer console for more detail, or try another network.</p><button class="action action-secondary" id="boot-retry">Reload the Game</button></section>';
+        document.getElementById('boot-hint').textContent = hint;
+        document.getElementById('boot-retry').addEventListener('click', () => location.reload());
+      }
+      // Missing or unparseable app.js? Warn promptly. If the app started,
+      // the SDK/auth operation timeouts will diagnose the network themselves.
+      const missingScriptGuard = setTimeout(() => {
+        if (!window.__encoreAppStarted) showBootIssue();
+      }, 11000);
+      const stalledStartupGuard = setTimeout(showBootIssue, 47000);
+      window.addEventListener('pagehide', () => {
+        clearTimeout(missingScriptGuard);
+        clearTimeout(stalledStartupGuard);
+      }, { once: true });
+    });
+  </script>
+  <!-- The game runs directly from this HTML, avoiding missing app.js deployment issues. -->
+  <script type="module">
+// Do not statically import the remote SDK: if its CDN is unreachable, an ES module
+// never runs and the initial loading screen becomes permanent.
+const SUPABASE_SDK_SOURCES = [
+  'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm',
+  'https://esm.sh/@supabase/supabase-js@2?bundle'
+];
+let createClient = null;
+function timeLimit(promise, milliseconds, label) {
+  let timer;
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => {
+      timer = setTimeout(() => reject(new Error(`${label} timed out. Check your connection and retry.`)), milliseconds);
+    })
+  ]).finally(() => clearTimeout(timer));
+}
+async function loadSupabaseSdk() {
+  const attempts=[];
+  for(const url of SUPABASE_SDK_SOURCES) {
+    try {
+      const library = await timeLimit(import(/* @vite-ignore */ url), 9000, 'Loading the game library');
+      if(typeof library.createClient !== 'function') throw new Error('Missing createClient export');
+      return library.createClient;
+    } catch(error) {
+      console.warn('Cards Against Encore: SDK source unavailable:', new URL(url).hostname, error);
+      attempts.push(new URL(url).hostname);
+    }
+  }
+  throw new Error(`Could not load the Supabase game library from ${attempts.join(' or ')}. Check internet/CDN access, or try another network.`);
+}
+window.__encoreAppStarted = true;
+
+// Cards Against Encore — zero-build static client.
+// Security-sensitive game logic lives in the Supabase SQL RPCs, not this file.
+const cfg = window.ENCORE_CONFIG || {};
+const app = document.getElementById('app');
+const toasts = document.getElementById('toasts');
+let db = null;
+let user = null;
+let currentRoomId = null;
+let state = null;
+let channel = null;
+let onlineMembers = new Set();
+let selected = [];
+let customText = '';
+let roomSignature = '';
+let offsetMs = 0;
+let inFlight = false;
+let refreshQueued = false;
+let refreshTimer = null;
+let clockTimer = null;
+let zeroTimerLast = 0;
+let pendingAction = false;
+let roomTransition = false;
+let nickname = localStorage.getItem('cae_nickname') || '';
+let cardDraft = {kind:'prompt', picks:'1', text:''};
+
+const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+const q = s => app.querySelector(s);
+const all = s => [...app.querySelectorAll(s)];
+const html = (s, fallback='') => escapeHtml(s ?? fallback);
+const confValid = () => Boolean(/^https:\/\/[^ ]+\.supabase\.co\/?$/.test(cfg.supabaseUrl || '') &&
+  cfg.publishableKey && !/YOUR|REPLACE|PLACEHOLDER/i.test(cfg.publishableKey));
+const asset = value => {
+  // Only safe http(s) or local paths are supported for decorative artwork.
+  if(typeof value !== 'string' || !value || /["'()\\\s]/.test(value)) return null;
+  if (/^(https?:\/\/|assets\/)/i.test(value)) return value;
+  return null;
+};
+const assetPath = key => asset(cfg.assets?.[key]) || {
+  promptFront:'assets/cards/prompt-front.svg',responseFront:'assets/cards/response-front.svg',
+  cardBack:'assets/cards/card-back.svg',logo:'assets/cards/crest.svg'
+}[key];
+function applyAssets(){
+  for(const [key,css] of Object.entries({promptFront:'--prompt-art',responseFront:'--response-art',cardBack:'--back-art',logo:'--logo-art'})){
+    document.documentElement.style.setProperty(css,`url("${assetPath(key)}")`);
+  }
+}
+function toast(message,kind='info'){
+  const box=document.createElement('div');
+  box.className=`toast ${kind}`;
+  box.textContent=message;
+  toasts.append(box);
+  setTimeout(()=>box.remove(),4300);
+}
+function friendlyError(error){
+  const s=String(error?.message || error || 'Something went wrong.');
+  if(/anonymous sign-ins|anonymous sign in|Anonymous sign-ins|Anonymous users are disabled/i.test(s))
+    return 'Enable Anonymous Sign-Ins in Supabase → Authentication → Providers → Anonymous.';
+  if(/failed to fetch|networkerror/i.test(s)) return 'Connection failed. Check your internet, Supabase URL, and project status.';
+  if(/could not find the function|schema cache/i.test(s)) return 'The database setup is missing or incomplete. Run the six SQL repair steps STEP_01 through STEP_06 in Supabase SQL Editor.';
+  return s;
+}
+async function rpc(fn,args={}){
+  if(!db) throw new Error('Supabase has not been configured.');
+  const {data,error}=await db.rpc(fn,args);
+  if(error) throw error;
+  return data;
+}
+function setupError(message){
+  app.innerHTML=`<section class="panel panel-pad error-panel">
+    <div class="eyebrow">✦ THE CURTAIN ISN'T READY</div>
+    <h1>One little setup step.</h1><p>${html(message)}</p>
+    <p class="text-note">Open <code>site/config.js</code>, add your Supabase project URL and publishable key, and run the six numbered SQL setup files (<code>STEP_01</code> through <code>STEP_06</code>) in Supabase's SQL Editor. Enable Anonymous Sign-Ins too.</p>
+    <button class="action action-secondary" data-action="retry-init">Try Again</button>
+  </section>`;
+}
+async function init(){
+  applyAssets();
+  if(!confValid()){setupError('Your Supabase URL or publishable key is missing or invalid.');window.__encoreBootComplete=true;return;}
+  try{
+    if(!createClient) createClient=await loadSupabaseSdk();
+    db=createClient(cfg.supabaseUrl, cfg.publishableKey,{
+      auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}
+    });
+    let {data:{session},error}=await timeLimit(db.auth.getSession(), 12000, 'Restoring guest session');
+    if(error) throw error;
+    if(!session){
+      const result=await timeLimit(db.auth.signInAnonymously(), 12000, 'Guest sign-in');
+      if(result.error) throw result.error;
+      session=result.data.session;
+    }
+    user=session?.user || (await timeLimit(db.auth.getUser(), 12000, 'Checking guest session')).data.user;
+    if(!user) throw new Error('Could not create a guest player session.');
+    const last=readLastRoom();
+    const invitedCode=(new URL(location.href)).searchParams.get('room')?.toUpperCase();
+    if(last?.id && (!invitedCode || invitedCode===last.code)){
+      currentRoomId=last.id;
+      try{
+        await refreshState(true);
+        if(!state) throw new Error('The room could not be restored.');
+        connectRoom();
+      }catch(error){
+        currentRoomId=null;localStorage.removeItem('cae_room');renderLanding();
+      }
+    }else renderLanding();
+    if(!refreshTimer) refreshTimer=setInterval(()=>{if(currentRoomId) refreshState();},3000);
+    if(!clockTimer) clockTimer=setInterval(updateClock,200);
+    window.__encoreBootComplete = true;
+  }catch(error){
+    console.error('Cards Against Encore startup error:', error);
+    setupError(friendlyError(error));
+    window.__encoreBootComplete = true;
+  }
+}
+function readLastRoom(){try{return JSON.parse(localStorage.getItem('cae_room')||'null');}catch{return null;}}
+function saveRoom(id,code){localStorage.setItem('cae_room',JSON.stringify({id,code}));}
+function renderLanding(){
+  state=null;roomSignature='';onlineMembers.clear();selected=[];customText='';
+  const code=(new URL(location.href)).searchParams.get('room')||'';
+  app.innerHTML=`
+    <section class="hero">
+      <img class="crest" src="${assetPath('logo')}" alt="Azure crown crest">
+      <div class="eyebrow eyebrow-gold">✦ THE AZURE PARLOR PRESENTS ✦</div>
+      <h1 class="hero-title">Cards Against <em>Encore</em></h1>
+      <p class="hero-subtitle">An absurd game of perfect timing and terrible answers. Grab your friends, unleash the chaos, and steal the spotlight.</p>
+      <div class="divider-star">✦ ✧ ✦</div>
+      <div class="hero-cards" aria-hidden="true"><div class="mini-back mini-back-left"></div><div class="mini-back mini-back-center"></div><div class="mini-back mini-back-right"></div></div>
+      <div class="info-cards" style="justify-content:center"><span class="badge">3–16 Players</span><span class="badge">Live Multiplayer</span><span class="badge">Write Your Own Answers</span><span class="badge">No Account Needed</span></div>
+    </section>
+    <section class="intro-grid">
+      <div class="panel">
+        <div class="eyebrow">01 / THE HOST</div><h2>Create a room</h2>
+        <p>Become the master of ceremonies. Invite friends using a room code or a link.</p>
+        <form data-form="create">
+          <div class="field"><label for="createNick">Your stage name</label><input id="createNick" name="nickname" maxlength="24" required placeholder="The Grand Jester" autocomplete="nickname" value="${html(nickname)}"></div>
+          <button class="action action-block" type="submit">✦ Create Your Stage</button>
+        </form>
+      </div>
+      <div class="panel">
+        <div class="eyebrow">02 / THE GUEST</div><h2>Join a room</h2>
+        <p>Someone has already started the show? Enter their code to join the cast.</p>
+        <form data-form="join">
+          <div class="field"><label for="joinNick">Your stage name</label><input id="joinNick" name="nickname" maxlength="24" required placeholder="The Mysterious Guest" autocomplete="nickname" value="${html(nickname)}"></div>
+          <div class="field"><label for="roomCode">Six-character room code</label><input id="roomCode" name="code" maxlength="6" minlength="6" spellcheck="false" autocapitalize="characters" required placeholder="A3F09B" value="${html(code.toUpperCase())}"></div>
+          <button class="action action-block action-secondary" type="submit">✧ Enter the Theater</button>
+        </form>
+      </div>
+    </section>
+    <p class="text-note" style="text-align:center;margin:23px auto;max-width:700px">In a round, everyone selects ${'1–3'} response cards or writes a custom answer. A rotating judge or the entire group picks the winner. The scores and countdowns synchronize across devices.</p>`;
+}
+function playerById(id){return (state?.players||[]).find(p=>p.id===id);}
+function statusMeta(){
+  const r=state.room;
+  const isJudge=r.mode==='judge' && r.judge_member_id===state.me.id;
+  if(r.phase==='lobby')return ['Gather Your Cast','Share your room code. The performance begins when the host starts the game.'];
+  if(r.phase==='submit')return [isJudge?'Your Turn to Judge':'The Cards Are Dealt',isJudge?'You are the judge. Wait for the others to submit their funniest answers.':'Choose the required number of responses before the countdown ends.'];
+  if(r.phase==='judge')return [r.mode==='vote'?'The Audience Decides':'The Judge Decides',r.mode==='vote'?'Each player who submitted votes for someone else.':'The judge picks the funniest anonymous response.'];
+  if(r.phase==='results')return ['The Grand Reveal','A winner steps into the spotlight. Next round begins automatically.'];
+  return ['The Final Curtain','The game has ended. The host can start another performance.'];
+}
+function playerRow(p){
+  const you=p.id===state.me.id;
+  return `<div class="player-row"><div style="min-width:0"><div class="player-name">${html(p.nickname)} ${you?'<span class="tiny-tag">YOU</span>':''}</div>
+    <div class="tiny">${p.is_host?'<span class="tiny-tag">♛ HOST</span> ':''}${p.is_judge&&state.room.phase!=='ended'?'<span class="tiny-tag">✦ JUDGE</span>':''}</div></div>
+    <div class="player-meta"><span class="player-dot" data-member-id="${p.id}" aria-label="Offline"></span><strong class="score">${p.score} ★</strong></div></div>`;
+}
+function sidebar(){
+  const players=state.players;
+  return `<aside class="sidebar">
+    <section class="panel panel-pad"><div class="section-label">✦ THE CAST <span class="badge">${players.length}/16</span></div>
+    <div class="stat-row"><span>Connected now</span><strong id="onlineCount">—</strong></div>
+    <div class="player-list">${players.map(playerRow).join('')}</div>
+    <p class="side-hint" style="margin:14px 0 0">Green dots mean online. Offline players can rejoin on the same device without losing their score.</p>
+    </section>
+    <section class="panel panel-pad"><div class="section-label">✧ HOW TO PLAY</div>
+      <div class="stat-row"><span>Game mode</span><strong>${state.room.mode==='judge'?'Judge’s Choice':'Audience Vote'}</strong></div>
+      <div class="stat-row"><span>Responding</span><strong>${state.room.answer_seconds}s</strong></div>
+      <div class="stat-row"><span>Judging</span><strong>${state.room.judge_seconds}s</strong></div>
+      <div class="divider"></div><p class="side-hint">Blue prompt = the question. Light cards = your private hand. Write one custom response per round if your imagination demands it.</p>
+    </section>
+  </aside>`;
+}
+function showHostSettings(){
+  const r=state.room;
+  return `<section class="panel game-panel"><div class="section-label">♛ HOST'S CONTROL ROOM</div>
+    <h2>Prepare the performance</h2><p class="text-note">Choose how the winner is picked and how long each round lasts.</p>
+    <form data-form="start">
+      <div class="settings-grid">
+        <div class="field"><label for="gameMode">Win condition</label><select id="gameMode" name="mode"><option value="judge" ${r.mode==='judge'?'selected':''}>Rotating Judge</option><option value="vote" ${r.mode==='vote'?'selected':''}>Everyone Votes</option></select></div>
+        <div class="field"><label for="roundLimit">Total rounds</label><select id="roundLimit" name="rounds">${[3,5,8,10,12,15,20,30].map(n=>`<option value="${n}" ${n===r.round_limit?'selected':''}>${n} rounds</option>`).join('')}</select></div>
+        <div class="field"><label for="answerSecs">Response time</label><select id="answerSecs" name="answerSecs">${[20,30,45,60,90,120,180].map(n=>`<option value="${n}" ${n===r.answer_seconds?'selected':''}>${n} seconds</option>`).join('')}</select></div>
+        <div class="field"><label for="judgeSecs">Judging / voting time</label><select id="judgeSecs" name="judgeSecs">${[15,20,30,45,60,90,120].map(n=>`<option value="${n}" ${n===r.judge_seconds?'selected':''}>${n} seconds</option>`).join('')}</select></div>
+      </div>
+      <div class="settings-footer"><button class="action action-gold" type="submit" ${state.players.length<3?'disabled':''}>✦ ${r.phase==='ended'?'Play Another Game':'Begin the Show'} (${state.players.length}/3 minimum)</button></div>
+    </form>
+  </section>`;
+}
+function customDeckPanel(){
+  const cards=state.custom_cards||[];
+  return `<section class="panel game-panel">
+    <div class="section-label">✦ THE PERSONALIZED DECK</div>
+    <h2>Create your own cards</h2>
+    <p class="text-note">Host-only: add black prompt cards or light response cards for this room. Every future round can draw them automatically.</p>
+    <form data-form="card">
+      <div class="settings-grid">
+        <div class="field"><label for="deckKind">Card type</label><select id="deckKind" name="kind"><option value="prompt" ${cardDraft.kind==='prompt'?'selected':''}>Prompt (dark blue)</option><option value="answer" ${cardDraft.kind==='answer'?'selected':''}>Response (light blue)</option></select></div>
+        <div class="field"><label for="deckPicks">Answers required</label><select id="deckPicks" name="picks" ${cardDraft.kind==='answer'?'disabled':''}>${[1,2,3].map(n=>`<option value="${n}" ${Number(cardDraft.picks)===n?'selected':''}>Pick ${n}</option>`).join('')}</select></div>
+      </div>
+      <div class="field"><label for="deckText">Card text</label><textarea id="deckText" name="text" maxlength="240" required placeholder="The jester's next trick is _____."></textarea></div>
+      <div class="two-actions"><button class="action action-secondary" type="submit">+ Add to Room Deck</button><span class="text-note">${cards.length}/150 custom cards</span></div>
+    </form>
+    ${cards.length?`<div class="custom-deck-list">${cards.map(c=>`<div class="deck-entry"><div><span class="eyebrow">${c.kind==='prompt'?'PROMPT':'RESPONSE'}${c.kind==='prompt'?' · PICK '+c.picks:''}</span><p>${html(c.text)}</p></div><button type="button" data-action="remove-card" data-card-id="${c.id}" aria-label="Remove card">✕</button></div>`).join('')}</div>`:'<div class="hint-box">Your room is using the original starter deck. Add your own chaos here!</div>'}
+  </section>`;
+}
+function lobbyView(){
+  return `<section class="panel game-panel">
+    <div class="section-label">✦ THE WAITING ROOM</div>
+    <div class="waiting-card" style="min-height:190px"><div class="waiting-icon">♛</div><h3>The Cast Assembles</h3>
+      <p>Invite friends with the code above. Every new player will appear automatically.</p>
+      <div class="badge">${state.players.length} of at least 3 performers ready</div></div>
+  </section>
+  ${state.room.is_host?showHostSettings()+customDeckPanel():`<section class="panel game-panel"><div class="waiting-card" style="min-height:125px"><div class="waiting-icon">✧</div><p>Waiting for the host to start the game. You will be moved to your cards automatically.</p></div></section>`}`;
+}
+function promptSection(){
+  if(!state.prompt)return '';
+  return `<section class="panel game-panel">
+    <div class="section-label">✦ THE PROMPT CARD</div>
+    <div class="prompt-wrap"><div class="card prompt-card"><div class="card-mini">CARDS AGAINST ENCORE · PROMPT</div>
+      <div class="card-title">${html(state.prompt.text)}</div><div class="card-small-note">✦ THE AZURE PARLOR ✦</div></div>
+      <div class="prompt-info"><span class="badge">PICK ${state.prompt.picks}</span>
+        <strong>${state.prompt.picks===1?'One answer. Endless possibilities.':`${state.prompt.picks} answers to complete this catastrophe.`}</strong>
+        <p>Choose the cards in the order you want them revealed. A custom-written answer counts as one selection.</p>
+      </div></div>
+  </section>`;
+}
+function waitPanel(icon,title,description){
+  return `<section class="panel game-panel"><div class="waiting-card"><div class="waiting-icon">${icon}</div><h3>${title}</h3><p>${description}</p></div></section>`;
+}
+function submitPanel(){
+  const r=state.room;
+  if(r.mode==='judge'&&r.judge_member_id===state.me.id)
+    return waitPanel('♛','You Hold the Crown',`The cast is composing their responses. ${state.submission_count} of ${state.submission_required} have submitted. You'll pick the winner when they're ready.`);
+  if(state.has_submitted)return waitPanel('✦','Your Answer Is Sealed',`${state.submission_count} of ${state.submission_required} responses received. Wait for the judge or audience to see them.`);
+  const picks=state.prompt?.picks||1;
+  return `<section class="panel game-panel"><div class="section-label">✧ YOUR PRIVATE HAND <span class="badge">${state.hand.length} CARDS</span></div>
+     <h2>Choose your response${picks>1?'s':''}</h2>
+     <p class="text-note">Select ${picks} card${picks>1?'s':''} in order. You may use a custom answer too.</p>
+     <div class="answer-grid">${state.hand.map((card,i)=>{
+       const index=selected.indexOf('c:'+card.id);
+       return `<button type="button" class="card answer-card ${index>=0?'selected':''}" data-action="select-card" data-card-id="${card.id}" aria-pressed="${index>=0}" aria-label="Choose: ${html(card.text)}">
+         <span class="card-mini">ENCORE RESPONSE ${i+1}</span>
+         <span class="card-title">${html(card.text)}</span>
+         <span class="choice-number">${index>=0?index+1:'✦'}</span></button>`;
+     }).join('')}</div>
+     <div class="custom-box ${selected.includes('custom')?'custom-selected':''}">
+       <div class="custom-head"><strong>✎ Write Your Own Card</strong><span>ONE custom answer per round</span></div>
+       <textarea id="customAnswer" maxlength="160" aria-label="Your custom card response" placeholder="The funniest, strangest, most unhinged answer you can imagine..."></textarea>
+       <div class="custom-bottom"><span class="custom-counter" id="customCount">${customText.length}/160 characters</span>
+         <button type="button" class="action action-small action-secondary" data-action="select-custom">${selected.includes('custom')?'✓ Remove Custom Selection':'+ Use This Answer'}</button></div>
+     </div>
+     <div class="selection-bar"><p id="selectionCount"><strong>${selected.length}/${picks}</strong> selected ${selected.length?`· ${selected.map((s,i)=>`#${i+1} ${s==='custom'?'Custom':'Card'}`).join(', ')}`:''}</p>
+       <button type="button" class="action" id="submitAnswer" data-action="submit-answer" ${selected.length!==picks||(selected.includes('custom')&&!customText.trim())?'disabled':''}>Lock In My Answer ✦</button></div>
+   </section>`;
+}
+function answerEntry(sub,i){
+  const r=state.room;
+  const isResult=r.phase==='results'||r.phase==='ended';
+  const isWinner=r.winning_submission_id===sub.id;
+  const eligible=r.phase==='judge' && (
+    (r.mode==='judge'&&r.judge_member_id===state.me.id) ||
+    (r.mode==='vote'&&state.has_submitted&&!state.has_voted&&!sub.is_mine)
+  );
+  const who=playerById(sub.author_id)?.nickname || 'A mysterious performer';
+  const action=eligible?(r.mode==='judge'?'pick-winner':'cast-vote'):'';
+  return `<button type="button" class="response-entry ${isWinner?'winner-entry':''} ${eligible?'can-select':isResult?'':'entry-disabled'}"
+    ${action?`data-action="${action}" data-submission-id="${sub.id}"`: 'disabled'}>
+    <span class="entry-index">${isWinner?'★ THE WINNING ANSWER':`RESPONSE ${String(i+1).padStart(2,'0')}`}</span>
+    <div class="response-text">${sub.answers.map(a=>`<span class="answer-fragment">${html(a.text)}${a.custom?' <span title="Custom response">✎</span>':''}</span>`).join('')}</div>
+    <span class="entry-footer">${isResult?`Played by ${html(who)}${r.mode==='vote'?' · '+sub.votes+' votes':''}`:
+       sub.is_mine?'Your response': eligible?(r.mode==='judge'?'♛ Tap to declare winner':'♡ Tap to vote'):'Anonymous response'}</span>
+  </button>`;
+}
+function judgePanel(){
+  const r=state.room;
+  if(!state.submissions?.length)return waitPanel('◌','Nobody Answered','This round is about to end without a winning card.');
+  const canJudge=r.mode==='judge'&&r.judge_member_id===state.me.id;
+  const canVote=r.mode==='vote'&&state.has_submitted&&!state.has_voted;
+  const message=r.mode==='judge'?
+    (canJudge?'Tap the response you want to crown. Nobody will know who played it until the reveal.':'The judge is deciding which response wins.'):
+    (canVote?'Vote for your favorite response. You cannot vote for your own card.':state.has_voted?'Your vote is locked in. Waiting for the other players.':'Waiting for the audience to finish voting.');
+  return `<section class="panel game-panel"><div class="section-label">${r.mode==='vote'?'✧ AUDIENCE BALLOT':'♛ JUDGE’S TABLE'}</div>
+    <h2>${r.mode==='vote'?'Who Deserves the Encore?':'Pick the Winning Response'}</h2>
+    <p class="text-note">${message}</p>
+    <div class="info-cards" style="margin:0 0 15px"><span class="badge">${state.submissions.length} answers</span>
+      ${r.mode==='vote'?`<span class="badge">${state.vote_count}/${state.vote_required} votes</span>`:''}</div>
+    <div class="response-grid">${state.submissions.map(answerEntry).join('')}</div>
+  </section>`;
+}
+function resultsPanel(){
+  const r=state.room;
+  const win=playerById(r.winner_member_id);
+  return `<section class="panel game-panel"><div class="section-label">✦ THE GRAND REVEAL</div>
+    <div class="winner-banner"><div class="eyebrow eyebrow-gold">${win?'THE SPOTLIGHT IS YOURS':'NO WINNER THIS ROUND'}</div>
+      <h2>${win?`♛ ${html(win.nickname)} ♛`:'The Curtain Falls on Silence'}</h2>
+      <p class="text-note">${win?'A magnificent point has been added to the scoreboard.':'There were no valid votes or submissions in time.'}</p></div>
+    ${state.submissions.length?`<div class="response-grid">${state.submissions.map(answerEntry).join('')}</div>`:''}
+    ${r.phase==='results'?`<p class="text-note" style="margin-top:17px;text-align:center">The next round starts automatically in a few seconds…</p>`:''}
+  </section>`;
+}
+function endedPanel(){
+  const ranked=[...state.players].sort((a,b)=>b.score-a.score);
+  return `<section class="panel game-panel"><div class="section-label">✦ THE FINAL ENCORE</div>
+    <div class="winner-banner"><div class="eyebrow eyebrow-gold">THE GRAND CHAMPION</div>
+      <h2>♛ ${ranked.length?html(ranked[0].nickname):'Nobody'} ♛</h2>
+      <p class="text-note">${ranked.length?ranked[0].score:0} points · ${state.room.round_no} rounds played</p></div>
+    <ol class="leader-list">${ranked.map((p,i)=>`<li><span>${['🥇','🥈','🥉'][i]||'#'+(i+1)} ${html(p.nickname)} ${p.id===state.me.id?'(you)':''}</span><b>${p.score} ★</b></li>`).join('')}</ol>
+  </section>
+  ${state.room.is_host?showHostSettings()+customDeckPanel():waitPanel('✧','Another Show?','The host can start another game with the same group. Stay in the room!')}`;
+}
+function renderRoom(){
+  if(!state)return;
+  const prior=document.activeElement;
+  const priorId=prior&&app.contains(prior)?prior.id:null;
+  const priorStart=(prior?.selectionStart??null);
+  const r=state.room;
+  const [title,description]=statusMeta();
+  const phaseContent = r.phase==='lobby'?lobbyView() :
+    r.phase==='submit'? promptSection()+submitPanel() :
+    r.phase==='judge'? promptSection()+judgePanel() :
+    r.phase==='results'? promptSection()+resultsPanel() : endedPanel();
+  app.innerHTML=`<header class="room-topbar">
+    <div class="brand-line"><img src="${assetPath('logo')}" alt="Azure crest"><div><div class="eyebrow eyebrow-gold">✦ THE AZURE PARLOR</div><h1>Cards Against Encore</h1></div></div>
+    <div class="room-actions"><div class="room-code"><div><small>ROOM CODE</small>${html(r.code)}</div></div>
+      <button class="action action-secondary action-small" data-action="copy-code" title="Copy room code">⧉ Code</button>
+      <button class="action action-secondary action-small" data-action="share-room" title="Share room link">↗ Invite</button>
+      <button class="action action-quiet action-small" data-action="leave-room">Leave</button></div>
+  </header>
+  <section class="status-bar"><div class="status-content"><div><div class="eyebrow">${r.phase==='lobby'?'PRE-SHOW':r.phase==='ended'?'THE END':'LIVE PERFORMANCE'}</div>
+    <h2 class="status-title">${title}</h2><p class="status-desc">${description}</p></div>
+    <div style="display:flex;align-items:center;gap:15px"><span class="round-pill">${r.phase==='lobby'?'WAITING ROOM':`ROUND ${r.round_no} / ${r.round_limit}`}</span>
+      ${r.phase_deadline&&r.phase!=='ended'?'<span class="countdown" id="countdown">--:--</span>':''}</div></div>
+      ${r.phase_deadline&&r.phase!=='ended'?'<div class="time-track"><div class="time-fill" id="timeFill"></div></div>':''}</section>
+  <div class="game-layout"><main class="main-section">${phaseContent}</main>${sidebar()}</div>`;
+  if(q('#customAnswer'))q('#customAnswer').value=customText;
+  if(q('#deckText'))q('#deckText').value=cardDraft.text;
+  if(priorId&&q('#'+priorId)){
+    const next=q('#'+priorId);next.focus({preventScroll:true});
+    if(priorStart!==null&&typeof next.setSelectionRange==='function'){
+      try{next.setSelectionRange(priorStart,priorStart);}catch{}
+    }
+  }
+  paintPresence();updateClock();
+}
+function paintPresence(){
+  if(!state)return;
+  // Our own active session is connected even before the Presence event settles.
+  let online=0;
+  for(const p of state.players){
+    const yes=onlineMembers.has(p.id)||(p.id===state.me.id && channel?.state==='joined');
+    if(yes)online++;
+    const dot=all('.player-dot').find(el=>el.dataset.memberId===p.id);
+    if(dot){dot.classList.toggle('online',yes);dot.setAttribute('aria-label',yes?'Online':'Offline');dot.title=yes?'Online':'Offline / reconnecting';}
+  }
+  const display=q('#onlineCount');if(display)display.textContent=`${online} / ${state.players.length}`;
+}
+function updateClock(){
+  if(!state)return;
+  const el=q('#countdown');const fill=q('#timeFill');
+  const deadline=state.room.phase_deadline;
+  if(!el||!deadline)return;
+  const ms=Math.max(0,Date.parse(deadline)-(Date.now()+offsetMs));
+  const secs=Math.ceil(ms/1000);
+  el.textContent=`${String(Math.floor(secs/60)).padStart(2,'0')}:${String(secs%60).padStart(2,'0')}`;
+  const phase=state.room.phase;
+  const duration=(phase==='submit'?state.room.answer_seconds:phase==='judge'?state.room.judge_seconds:8)*1000;
+  if(fill)fill.style.width=`${Math.max(0,Math.min(100,ms/duration*100))}%`;
+  if(secs===0 && Date.now()-zeroTimerLast>1300){zeroTimerLast=Date.now();refreshState();}
+}
+async function refreshState(force=false){
+  if(!currentRoomId||!db)return;
+  if(inFlight){refreshQueued=true;return;}
+  inFlight=true;
+  try{
+    const data=await rpc('cae_get_state',{p_room:currentRoomId});
+    if(!data||data.room?.id!==currentRoomId)return;
+    offsetMs=Date.parse(data.server_now)-Date.now();
+    const signature=JSON.stringify({...data,server_now:undefined});
+    const prevRound=state?.room.round_no;
+    if(prevRound!==undefined&&prevRound!==data.room.round_no){selected=[];customText='';}
+    state=data;
+    if(force||signature!==roomSignature){roomSignature=signature;renderRoom();}
+    else updateClock();
+  }catch(error){
+    if(/not a member|Join using|not an active player/i.test(String(error?.message||''))){
+      await disconnectRoom();currentRoomId=null;state=null;localStorage.removeItem('cae_room');renderLanding();
+    } else {
+      console.error('Room refresh:',error);
+      if(force)toast(friendlyError(error),'error');
+    }
+  }finally{
+    inFlight=false;
+    if(refreshQueued){refreshQueued=false;queueMicrotask(()=>refreshState());}
+  }
+}
+function syncPresence(){
+  if(!channel)return;
+  const presences=Object.values(channel.presenceState()||{}).flat();
+  onlineMembers=new Set(presences.map(p=>p.member_id).filter(Boolean));
+  paintPresence();
+}
+function connectRoom(){
+  if(!currentRoomId||!state||!db)return;
+  if(channel)db.removeChannel(channel);
+  onlineMembers=new Set([state.me.id]);
+  channel=db.channel(`cae:${currentRoomId}`,{config:{presence:{key:state.me.id},broadcast:{self:false}}});
+  channel.on('presence',{event:'sync'},()=>{syncPresence();refreshState();});
+  channel.on('presence',{event:'join'},()=>{syncPresence();refreshState();});
+  channel.on('presence',{event:'leave'},()=>{syncPresence();refreshState();});
+  channel.on('broadcast',{event:'refresh'},()=>refreshState());
+  channel.subscribe(async status=>{
+    if(status==='SUBSCRIBED'){
+      await channel?.track({member_id:state?.me.id,joined_at:new Date().toISOString()});
+      syncPresence();refreshState();
+    }else if(status==='CHANNEL_ERROR'||status==='TIMED_OUT'){
+      toast('Realtime connection is reconnecting. Automatic updates will continue.');
+    }
+  });
+  paintPresence();
+}
+async function disconnectRoom(){
+  const old=channel;channel=null;onlineMembers.clear();
+  if(old&&db){try{await db.removeChannel(old);}catch{}}
+}
+function announce(){
+  if(channel){channel.send({type:'broadcast',event:'refresh',payload:{changed:true}}).catch(()=>{});}
+}
+async function notifyPeers(){
+  if(channel){try{await channel.send({type:'broadcast',event:'refresh',payload:{changed:true}});}catch{}}
+}
+function signalRefresh(){
+  announce();
+  // A fast refresh keeps the sender's screen in sync with the authoritative RPC.
+  return refreshState(true);
+}
+async function doAction(work,success){
+  if(pendingAction)return;
+  pendingAction=true;
+  try{
+    await work();
+    if(success)toast(success,'success');
+  }catch(error){toast(friendlyError(error),'error');console.error(error);}
+  finally{pendingAction=false;}
+}
+function enterRoom(id,code){
+  currentRoomId=id;state=null;roomSignature='';selected=[];customText='';
+  saveRoom(id,code);
+  app.innerHTML='<div class="loading-screen"><div class="loading-icon">✦</div><p>Entering the theater…</p></div>';
+  return refreshState(true).then(()=>{if(state)connectRoom();else throw new Error('Room created but its state could not be loaded. Check your connection and try reloading.');});
+}
+async function createRoom(name){
+  const id=await rpc('cae_create_room',{p_nickname:name});
+  nickname=name;localStorage.setItem('cae_nickname',name);
+  await enterRoom(id,'');
+  if(state)saveRoom(id,state.room.code);
+  history.replaceState({},'',location.pathname);
+}
+async function joinRoom(code,name){
+  const id=await rpc('cae_join_room',{p_code:code,p_nickname:name});
+  nickname=name;localStorage.setItem('cae_nickname',name);
+  await enterRoom(id,code);
+  history.replaceState({},'',location.pathname);
+}
+async function leaveRoom(){
+  if(!currentRoomId)return;
+  // Explicit departure removes the player from the roster. Tab closing only marks offline.
+  const id=currentRoomId;
+  await rpc('cae_leave_room',{p_room:id});
+  await notifyPeers();
+  await disconnectRoom();
+  currentRoomId=null;state=null;roomSignature='';selected=[];customText='';
+  localStorage.removeItem('cae_room');renderLanding();
+}
+function toggleCard(cardId){
+  const key='c:'+cardId;
+  if(selected.includes(key))selected=selected.filter(v=>v!==key);
+  else if(selected.length<(state.prompt?.picks||1))selected.push(key);
+  else {toast(`Select exactly ${state.prompt?.picks} answers. Deselect one first.`);return;}
+  renderRoom();
+}
+function toggleCustom(){
+  if(selected.includes('custom'))selected=selected.filter(x=>x!=='custom');
+  else if(selected.length<(state.prompt?.picks||1))selected.push('custom');
+  else {toast('Deselect a card first to make room for your custom answer.');return;}
+  renderRoom();
+}
+function submitAnswer(){
+  if(!state||state.room.phase!=='submit'||state.has_submitted)return;
+  const picks=state.prompt?.picks||1;
+  if(selected.length!==picks){toast(`Choose ${picks} responses first.`);return;}
+  if(selected.includes('custom')&&!customText.trim()){toast('Write your custom answer before submitting.');return;}
+  const choices=selected.map(v=>v==='custom'?{custom_text:customText.trim()}:{card_id:Number(v.slice(2))});
+  return doAction(async()=>{
+    await rpc('cae_submit',{p_room:currentRoomId,p_choices:choices});
+    selected=[];customText='';await signalRefresh();
+  },'Your answer is sealed!');
+}
+function startGame(form){
+  return doAction(async()=>{
+    await rpc('cae_start_game',{
+      p_room:currentRoomId,p_mode:form.elements.namedItem('mode').value,p_round_limit:Number(form.elements.namedItem('rounds').value),
+      p_answer_seconds:Number(form.elements.namedItem('answerSecs').value),p_judge_seconds:Number(form.elements.namedItem('judgeSecs').value)
+    });
+    selected=[];customText='';cardDraft.text='';await signalRefresh();
+  },'The show has begun!');
+}
+function addCard(form){
+  const kind=form.elements.namedItem('kind').value;
+  const content=form.elements.namedItem('text').value.trim();
+  if(!content){toast('Write your card text first.');return;}
+  if(kind==='answer'&&content.length>160){toast('Response cards can be at most 160 characters.');return;}
+  return doAction(async()=>{
+    await rpc('cae_add_card',{p_room:currentRoomId,p_kind:kind,p_content:content,p_picks:Number(form.elements.namedItem('picks').value)});
+    cardDraft.text='';await signalRefresh();
+  },'Your custom card is in the deck!');
+}
+function removeCard(id){
+  if(!confirm('Delete this custom card from the room deck?'))return;
+  return doAction(async()=>{
+    await rpc('cae_remove_card',{p_room:currentRoomId,p_card_id:Number(id)});
+    await signalRefresh();
+  },'Custom card removed.');
+}
+async function copyText(value){
+  if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(value);return;}
+  const input=document.createElement('textarea');input.value=value;document.body.append(input);input.select();
+  const ok=document.execCommand('copy');input.remove();if(!ok)throw new Error('Clipboard unavailable.');
+}
+function inviteUrl(){const link=new URL(location.href);link.search='';link.searchParams.set('room',state.room.code);link.hash='';return link.toString();}
+function shareRoom(){
+  return doAction(async()=>{
+    const url=inviteUrl();
+    if(navigator.share){try{await navigator.share({title:'Cards Against Encore',text:'Join my Cards Against Encore room!',url});return;}catch(error){if(error.name==='AbortError')return;}}
+    await copyText(url);toast('Invitation link copied!','success');
+  });
+}
+function actionForResponse(action,id){
+  return doAction(async()=>{
+    await rpc(action==='pick-winner'?'cae_pick_winner':'cae_vote',{
+      p_room:currentRoomId,p_submission:id
+    });
+    await signalRefresh();
+  },action==='pick-winner'?'Winner crowned!':'Your vote is sealed!');
+}
+app.addEventListener('submit',event=>{
+  const form=event.target.closest('[data-form]');if(!form)return;
+  event.preventDefault();
+  const kind=form.dataset.form;
+  if(kind==='create'){
+    const name=form.elements.namedItem('nickname').value.trim();if(!name)return;
+    doAction(()=>createRoom(name));
+  }else if(kind==='join'){
+    const name=form.elements.namedItem('nickname').value.trim();const code=form.elements.namedItem('code').value.trim().toUpperCase();
+    if(!name||code.length!==6){toast('Enter your nickname and a six-character code.');return;}
+    doAction(()=>joinRoom(code,name));
+  }else if(kind==='start')startGame(form);
+  else if(kind==='card')addCard(form);
+});
+app.addEventListener('click',event=>{
+  const btn=event.target.closest('[data-action]');if(!btn||btn.disabled)return;
+  const action=btn.dataset.action;
+  if(action==='retry-init'){app.innerHTML='<div class="loading-screen">Connecting…</div>';init();}
+  else if(action==='leave-room')doAction(leaveRoom);
+  else if(action==='copy-code')doAction(async()=>{await copyText(state.room.code);toast('Room code copied!','success');});
+  else if(action==='share-room')shareRoom();
+  else if(action==='select-card')toggleCard(btn.dataset.cardId);
+  else if(action==='select-custom')toggleCustom();
+  else if(action==='submit-answer')submitAnswer();
+  else if(action==='pick-winner'||action==='cast-vote')actionForResponse(action,btn.dataset.submissionId);
+  else if(action==='remove-card')removeCard(btn.dataset.cardId);
+});
+app.addEventListener('input',event=>{
+  const el=event.target;
+  if(el.id==='customAnswer'){
+    customText=el.value.slice(0,160);
+    const counter=q('#customCount');if(counter)counter.textContent=`${customText.length}/160 characters`;
+    const btn=q('#submitAnswer');if(btn){btn.disabled=selected.length!==(state.prompt?.picks||1)||(selected.includes('custom')&&!customText.trim());}
+  }
+  if(el.id==='deckText')cardDraft.text=el.value;
+  if(el.id==='deckKind'){
+    cardDraft.kind=el.value;
+    const picks=q('#deckPicks');if(picks)picks.disabled=el.value==='answer';
+  }
+  if(el.id==='deckPicks')cardDraft.picks=el.value;
+});
+app.addEventListener('change',event=>{
+  const el=event.target;
+  if(el.id==='deckKind'){
+    cardDraft.kind=el.value;
+    const picks=q('#deckPicks');if(picks)picks.disabled=el.value==='answer';
+  }
+  if(el.id==='deckPicks')cardDraft.picks=el.value;
+});
+window.addEventListener('online',()=>{if(currentRoomId)refreshState(true);});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&currentRoomId)refreshState(true);});
+window.addEventListener('unhandledrejection',event=>{console.error('Unhandled error:',event.reason);});
+init();
+
+  </script>
+</head>
+<body>
+  <div class="stars" aria-hidden="true"></div>
+  <div class="ambient ambient-left" aria-hidden="true"></div>
+  <div class="ambient ambient-right" aria-hidden="true"></div>
+  <div id="app" class="app" aria-live="polite">
+    <div class="loading-screen"><div class="loading-icon">✦</div><p>Preparing the grand stage…</p></div>
+  </div>
+  <div id="toasts" class="toasts" role="status" aria-live="polite"></div>
+  <footer class="global-footer"><span>✦ THE AZURE PARLOR ✦</span><span>A fan-made party game • Original starter cards</span></footer>
+</body>
+</html>
